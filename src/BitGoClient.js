@@ -83,13 +83,12 @@ function SendManyPromise(recipients, wallet) {
         wallet.sendMany(params).then(() => resolve()).catch(function(err) {
             var x = 0;
             var intervalID = setInterval(function () {
-                UnlockPromise(SendSinglePromise, recipients[x], wallet).then(() => {
-                    if (++x === recipients.length) {
-                        clearInterval(intervalID);
-                        resolve();
-                     }
-                });
-                
+                if (x++ === recipients.length) {
+                    clearInterval(intervalID);
+                    resolve();
+                    return;
+                }
+                UnlockPromise(SendSinglePromise, recipients[x-1], wallet);
             }, 6000);
         
         });
